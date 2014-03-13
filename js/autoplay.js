@@ -1,6 +1,9 @@
 (function($, window, document) {
     var $window = $(window);
     var $video = $('#video');
+    var $html = $('html');
+    var $body = $('body');
+    var $htmlbody = $('html, body');
     var video = $video.get(0);
     var $sections = $('.container');
     var chapterTimes = $sections.map(function() {
@@ -9,7 +12,7 @@
     var currentChapter = 0;
     var offsets = [];
     var currentTime = 0;
-    isScrolling = false;
+    var isScrolling = false;
 
     var resizeHandler = function() {
         $('.auto-height').height($window.height() + 'px');
@@ -17,7 +20,7 @@
             return $(this).offset().top;
         });
         isScrolling = true;
-        $('body').animate({scrollTop: offsets[currentChapter]}, 200, 'swing', function() {
+        $htmlbody.animate({scrollTop: offsets[currentChapter]}, 200, 'swing', function() {
             setTimeout(function() {
                 isScrolling = false;
                 console.log('scrollHandler is unlocked.');
@@ -26,8 +29,8 @@
         console.log('scroll to section ' + currentChapter + ' due to resize. scrollHandler is locked.');
     };
 
-    var scrollHandeler = function() {
-        var scroll = $window.scrollTop();
+    var scrollHandler = function() {
+        var scroll = $body.scrollTop() || $html.scrollTop();
         var newChapter = 0;
         for (var i = 0; i < offsets.length - 1; i++) {
             if (scroll >= (offsets[i] + offsets[i + 1]) / 2) {
@@ -38,7 +41,7 @@
         }
         var offset = offsets[newChapter];
         isScrolling = true;
-        $('body').animate({scrollTop: offset}, 200, 'swing', function() {
+        $htmlbody.animate({scrollTop: offset}, 200, 'swing', function() {
             setTimeout(function() {
                 isScrolling = false;
                 console.log('scrollHandler is unlocked.');
@@ -74,7 +77,7 @@
         }
         currentChapter = newChapter;
         isScrolling = true;
-        $('body').animate({scrollTop: offsets[currentChapter]}, 200, 'swing', function() {
+        $htmlbody.animate({scrollTop: offsets[currentChapter]}, 200, 'swing', function() {
             setTimeout(function() {
                 isScrolling = false;
                 console.log('scrollHandler is unlocked.');
@@ -95,7 +98,7 @@
             return;
         }
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(scrollHandeler, 300);
+        scrollTimer = setTimeout(scrollHandler, 300);
     });
     $video.on('timeupdate', timeupdateHandler);
 })(jQuery, window, document);
